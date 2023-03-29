@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/csv"
 	"fmt"
 	"io"
@@ -63,29 +64,40 @@ func calculateAverageTemp(unit string) (float64, error) {
 }
 
 func main() {
+
+	var input string
+	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Println("Venligst velg convert, average eller exit:")
+	for scanner.Scan() {
+    input = scanner.Text()
+	if input == "q" || input == "exit" {
+        fmt.Println("exit")
+        os.Exit(0)
+    }
+
 	// Sjekk om programmet blir kjørt med korrekt kommando
-	if len(os.Args) < 2 || (os.Args[1] != "convert" && os.Args[1] != "average") {
-		log.Fatal("Bruk kommando 1 eller 2: go run main.go convert\n      go run main.go average [f/c]")
-	}
-	
-	if os.Args[1] == "average" {
-		// Sjekk om ønsket enhet er spesifisert
-		if len(os.Args) < 3 {
-			log.Fatal("Du må spesifisere ønsket enhet for gjennomsnittet: 'f' for Fahrenheit eller 'c' for Celsius")
-		}
-		unit := os.Args[2]
-		if unit != "f" && unit != "c" {
-			log.Fatal("Ugyldig enhet. Du må velge 'f' for Fahrenheit eller 'c' for Celsius")
-		}
+	 if input == "average" {
+
+		scanner := bufio.NewScanner(os.Stdin)
+	fmt.Println("Du må spesifisere ønsket enhet for gjennomsnittet: 'f' for Fahrenheit eller 'c' for Celsius")
+	for scanner.Scan() {
+    input = scanner.Text()
+
+		if input == "c"|| input == "f" {
 		// Kall funksjonen for å beregne gjennomsnittet
-		averageTemp, err := calculateAverageTemp(unit)
+		averageTemp, err := calculateAverageTemp(input)
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Printf("Gjennomsnittstemperaturen er %.2f %s\n", averageTemp, unit)
+		fmt.Printf("Gjennomsnittstemperaturen er %.2f %s\n", averageTemp, input)
 		return
+		} 
 	}
 	
+	}
+	
+	if input == "convert" {
+
 	// Sett opp navn på inndata- og utdatafiler
 	inputFileName := "kjevik-temp-celsius-20220318-20230318.csv"
 	outputFileName := "kjevik-temp-fahr-20220318-20230318.csv"
@@ -173,4 +185,6 @@ func main() {
 	writer.Flush()
 
 	fmt.Printf("Utskriftsfilen '%s' er generert.\n", outputFileName)
+}
+	}
 }
